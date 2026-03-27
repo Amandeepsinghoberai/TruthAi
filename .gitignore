@@ -18,22 +18,32 @@ node_modules/
 
 # Testing
 /coverage
-
-# Next.js
-/.next/
-/out/
-next-env.d.ts
-*.tsbuildinfo
+/test_reports
 
 # Production builds
 /build
 dist/
 dist
+/out/
+/.next/
 
-# Environment files (comprehensive coverage)
+# Environment files - SENSITIVE DATA
+*.env
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+backend/.env
+frontend/.env
+# But allow example files
+!*.env.example
+!.env.example
 
+# Firebase credentials - SENSITIVE DATA
+**/serviceAccountKey.json
+**/*credentials*.json
 *token.json*
-*credentials.json*
 
 # Logs and debug files
 npm-debug.log*
@@ -41,6 +51,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 dump.rdb
+*.log
 
 # System files
 .DS_Store
@@ -48,9 +59,11 @@ dump.rdb
 
 # Python
 __pycache__/
-*pyc*
+*.pyc
+*.pyo
 venv/
 .venv/
+*.egg-info/
 
 # Development tools
 chainlit.md
@@ -60,9 +73,6 @@ chainlit.md
 
 # Deployment
 .vercel
-
-# Data and databases
-agenthub/agents/youtube/db
 
 # Archive files and large assets
 **/*.zip
@@ -76,16 +86,13 @@ agenthub/agents/youtube/db
 # Build caches
 .cache/
 
+# Test credentials
 memory/test_credentials.md
 
 # Mobile development
-android-sdk/frontend/node_modules/.cache/default-development/1.pack
--e 
-# Environment files
-*.env
-*.env.*
+android-sdk/
+
+# AI Model weights (optional - uncomment if too large)
+# backend/model/weights/*.pth
+# backend/model/weights/*.bin
 frontend/node_modules/.cache/default-development/1.pack
--e 
-# Environment files
-*.env
-*.env.*
