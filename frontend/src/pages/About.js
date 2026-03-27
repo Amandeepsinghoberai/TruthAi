@@ -72,21 +72,56 @@ const About = () => {
               Our Technology
             </h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              Truth AI uses state-of-the-art <strong>Vision Transformer (ViT)</strong> neural networks 
-              trained on millions of real and fake images to detect even subtle signs of manipulation.
+              Truth AI uses a <strong>dual-model AI system</strong> combining two specialized neural networks 
+              to provide comprehensive detection of both deepfakes and AI-generated content.
             </p>
+            
+            <div className="space-y-4 mb-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-lg mb-2">Model 1: Deepfake Detection</h4>
+                <p className="text-gray-700 text-sm mb-2">
+                  Uses <strong>Vision Transformer (ViT)</strong> trained on millions of deepfake videos to detect:
+                </p>
+                <ul className="space-y-1 text-gray-700 text-sm ml-4">
+                  <li>• Face-swap deepfakes</li>
+                  <li>• Facial manipulation and morphing</li>
+                  <li>• Lip-sync deepfakes</li>
+                  <li>• Expression transfer</li>
+                </ul>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-lg mb-2">Model 2: AI-Generated Content Detection</h4>
+                <p className="text-gray-700 text-sm mb-2">
+                  Specialized classifier trained to identify synthetic images from:
+                </p>
+                <ul className="space-y-1 text-gray-700 text-sm ml-4">
+                  <li>• Gemini / Google Imagen</li>
+                  <li>• DALL-E & GPT Image models</li>
+                  <li>• Midjourney</li>
+                  <li>• Stable Diffusion</li>
+                  <li>• Other text-to-image generators</li>
+                </ul>
+              </div>
+            </div>
+
+            <p className="text-gray-700 leading-relaxed mb-4">
+              <strong>Ensemble Approach:</strong> Both models analyze each file independently, and their 
+              predictions are combined using weighted voting to produce the final verdict with high accuracy.
+            </p>
+
             <ul className="space-y-2 text-gray-700">
               <li className="flex items-start">
                 <span className="text-[#2d7dd2] mr-2">•</span>
-                <span><strong>For Images:</strong> Analyzes pixel patterns, compression artifacts, and AI generation signatures</span>
+                <span><strong>For Images:</strong> Analyzes pixel patterns, compression artifacts, AI generation signatures, and facial inconsistencies</span>
               </li>
               <li className="flex items-start">
                 <span className="text-[#2d7dd2] mr-2">•</span>
-                <span><strong>For Videos:</strong> Extracts 20 frames and uses ensemble analysis for accurate detection</span>
+                <span><strong>For Videos:</strong> Extracts 20 frames and uses ensemble analysis across both models for accurate detection</span>
               </li>
               <li className="flex items-start">
                 <span className="text-[#2d7dd2] mr-2">•</span>
-                <span><strong>Model Accuracy:</strong> 90%+ detection rate on benchmark datasets</span>
+                <span><strong>Combined Accuracy:</strong> 90%+ detection rate on benchmark datasets across both deepfakes and AI-generated content</span>
               </li>
             </ul>
           </CardContent>
