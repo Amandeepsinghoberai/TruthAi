@@ -87,15 +87,21 @@ class DualModelDetector:
                 ai_real_prob = 1 - ai_generated_prob
             
             # === Ensemble Decision ===
-            # Strategy: If EITHER model detects fake/AI-generated with high confidence, flag it
-            # Weighted combination: 40% deepfake model + 60% AI-gen model (for images)
+            # Strategy: If EITHER model detects fake/AI-generated, give it higher weight
+            # For videos: If deepfake model says fake for ANY frame, it's more likely fake
+            # Weighted combination: 50% deepfake model + 50% AI-gen model (balanced)
             
-            combined_fake_prob = (0.4 * deepfake_fake_prob) + (0.6 * ai_generated_prob)
+            combined_fake_prob = (0.5 * deepfake_fake_prob) + (0.5 * ai_generated_prob)
             combined_real_prob = 1 - combined_fake_prob
             
-            # Determine final verdict
-            verdict = "FAKE" if combined_fake_prob > combined_real_prob else "REAL"
-            confidence = max(combined_real_prob, combined_fake_prob) * 100
+            # Lower threshold for videos: if combined_fake_prob > 0.40, mark as fake
+            # This makes it more sensitive to detecting fakes
+            if combined_fake_prob > 0.40:
+                verdict = "FAKE"
+                confidence = combined_fake_prob * 100
+            else:
+                verdict = "FAKE" if combined_fake_prob > combined_real_prob else "REAL"
+                confidence = max(combined_real_prob, combined_fake_prob) * 100
             
             # Detailed breakdown
             result = {
@@ -158,11 +164,13 @@ class DualModelDetector:
                 })
                 fake_probs.append(result['fake_prob'])
             
-            # Ensemble decision
+            # Ensemble decision for videos
+            # More aggressive: increase weight of max_fake to catch subtle deepfakes
             if ensemble_method == 'weighted':
                 mean_fake = np.mean(fake_probs)
                 max_fake = np.max(fake_probs)
-                final_fake_prob = 0.7 * mean_fake + 0.3 * max_fake
+                # Increase max weight from 30% to 40% to be more sensitive
+                final_fake_prob = 0.6 * mean_fake + 0.4 * max_fake
             elif ensemble_method == 'mean':
                 final_fake_prob = np.mean(fake_probs)
             elif ensemble_method == 'max':
@@ -171,8 +179,15 @@ class DualModelDetector:
                 final_fake_prob = np.mean(fake_probs)
             
             final_real_prob = 1 - final_fake_prob
-            verdict = "FAKE" if final_fake_prob > final_real_prob else "REAL"
-            confidence = max(final_fake_prob, final_real_prob) * 100
+            
+            # Lower threshold for videos: if > 40% fake probability, mark as fake
+            # This accounts for subtle deepfakes that might fool the model on some frames
+            if final_fake_prob > 0.40:
+                verdict = "FAKE"
+                confidence = final_fake_prob * 100
+            else:
+                verdict = "FAKE" if final_fake_prob > final_real_prob else "REAL"
+                confidence = max(final_fake_prob, final_real_prob) * 100
             
             result = {
                 'verdict': verdict,
