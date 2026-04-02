@@ -84,6 +84,11 @@ const Upload = () => {
     try {
       setProgress(30);
       
+      // Show warning for videos about processing time
+      if (isVideo) {
+        console.log('Processing video - this may take 2-3 minutes...');
+      }
+      
       const result = await uploadForDetection(file, getToken);
       
       setProgress(100);
@@ -94,7 +99,17 @@ const Upload = () => {
       }, 500);
 
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to analyze file. Please try again.');
+      console.error('Upload error:', err);
+      
+      // Check if it's a timeout error
+      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        setError(
+          'Video processing is taking longer than expected. This is normal for videos. ' +
+          'Your video is still being processed. Please check your dashboard in a few minutes for the results.'
+        );
+      } else {
+        setError(err.response?.data?.detail || 'Failed to analyze file. Please try again.');
+      }
       setProgress(0);
     } finally {
       setUploading(false);
@@ -191,6 +206,15 @@ const Upload = () => {
                   )}
                 </div>
 
+                {/* Warning for videos */}
+                {isVideo && !uploading && (
+                  <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
+                    <p className="text-sm text-yellow-800">
+                      <strong>⏱️ Note:</strong> Video analysis takes 2-3 minutes. Please be patient while both AI models analyze all frames.
+                    </p>
+                  </div>
+                )}
+
                 {uploading && (
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm text-gray-600">
@@ -199,7 +223,7 @@ const Upload = () => {
                     </div>
                     <Progress value={progress} className="h-2" />
                     <p className="text-sm text-gray-500 text-center">
-                      {isVideo ? 'Extracting and analyzing frames...' : 'Analyzing image...'}
+                      {isVideo ? 'Extracting and analyzing frames with dual AI models... This may take 2-3 minutes.' : 'Analyzing image with dual AI models...'}
                     </p>
                   </div>
                 )}
@@ -226,8 +250,8 @@ const Upload = () => {
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-[#1a3c5e] mb-1">&lt; 10s</p>
-              <p className="text-sm text-gray-600">Analysis Time</p>
+              <p className="text-2xl font-bold text-[#1a3c5e] mb-1">{isVideo && file ? '2-3min' : '< 10s'}</p>
+              <p className="text-sm text-gray-600">Analysis Time {isVideo && file ? '(Video)' : '(Image)'}</p>
             </CardContent>
           </Card>
           <Card>
