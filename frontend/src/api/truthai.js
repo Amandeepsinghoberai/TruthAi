@@ -25,7 +25,11 @@ export const uploadForDetection = async (file, getToken) => {
   const headers = await getAuthHeader(getToken);
   headers['Content-Type'] = 'multipart/form-data';
   
-  const response = await api.post('/detect', formData, { headers });
+  // Increase timeout for video processing (videos can take 2-3 minutes)
+  const response = await api.post('/detect', formData, { 
+    headers,
+    timeout: 300000 // 5 minutes timeout
+  });
   return response.data;
 };
 

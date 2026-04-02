@@ -16,16 +16,27 @@ async def get_scan_history(request: Request):
         
         # Query Firestore for user's scans
         scans_ref = db.collection('scans')
-        query = scans_ref.where('userId', '==', user_id).order_by('timestamp', direction='DESCENDING')
+        query = scans_ref.where('userId', '==', user_id)
         
         scans = []
         for doc in query.stream():
             scan_data = doc.to_dict()
             scan_data['scanId'] = doc.id
+            # Store original timestamp for sorting
+            original_timestamp = scan_data.get('timestamp')
             # Convert timestamp to ISO string
             if 'timestamp' in scan_data:
                 scan_data['timestamp'] = scan_data['timestamp'].isoformat()
+            # Keep timestamp for sorting
+            scan_data['_timestamp_sort'] = original_timestamp
             scans.append(scan_data)
+        
+        # Sort by timestamp in Python (descending - newest first)
+        scans.sort(key=lambda x: x.get('_timestamp_sort') or '', reverse=True)
+        
+        # Remove the sorting helper field
+        for scan in scans:
+            scan.pop('_timestamp_sort', None)
         
         logger.info(f"Retrieved {len(scans)} scans for user {user_id}")
         
